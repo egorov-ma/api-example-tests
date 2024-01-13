@@ -50,7 +50,7 @@ public class SimpleApiTests {
     }
 
     @Test
-    void putUpdateTest() {
+    void updateTest() {
         String userData = """
                 {
                     "name": "morpheus",
