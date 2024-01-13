@@ -6,7 +6,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 
-public class SimpleApiTests {
+public class SimpleApiTests extends TestBase {
 
 //    Разработайте 5 автотестов на запросы из https://reqres.in/
 //
@@ -18,7 +18,7 @@ public class SimpleApiTests {
     void getSingleUserTest() {
         given()
                 .log().uri()
-                .get("https://reqres.in/api/users/2")
+                .get("/api/users/2")
                 .then()
                 .log().status()
                 .log().body()
@@ -40,7 +40,7 @@ public class SimpleApiTests {
                 .contentType(JSON)
                 .log().uri()
                 .when()
-                .post("https://reqres.in/api/users")
+                .post("/api/users")
                 .then()
                 .log().status()
                 .log().body()
@@ -62,7 +62,7 @@ public class SimpleApiTests {
                 .contentType(JSON)
                 .log().uri()
                 .when()
-                .update("https://reqres.in/api/users/2")
+                .update("/api/users/2")
                 .then()
                 .log().status()
                 .log().body()
@@ -84,7 +84,7 @@ public class SimpleApiTests {
                 .contentType(JSON)
                 .log().uri()
                 .when()
-                .patch("https://reqres.in/api/users/2")
+                .patch("/api/users/2")
                 .then()
                 .log().status()
                 .log().body()
@@ -97,7 +97,7 @@ public class SimpleApiTests {
     void deleteDeleteTest() {
         given()
                 .log().uri()
-                .delete("https://reqres.in/api/users/2")
+                .delete("/api/users/2")
                 .then()
                 .log().status()
                 .statusCode(204);
