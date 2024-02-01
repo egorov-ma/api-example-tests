@@ -1,10 +1,12 @@
-package ru.egorovma;
+package ru.egorovma.tests;
 
 import org.junit.jupiter.api.Test;
+import ru.egorovma.models.UserDataModel;
+import ru.egorovma.models.UserResponseModel;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SimpleApiTests extends TestBase {
 
@@ -16,26 +18,26 @@ public class SimpleApiTests extends TestBase {
 
     @Test
     void getSingleUserTest() {
-        given()
+        UserResponseModel response = given()
                 .log().uri()
                 .get("/api/users/2")
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .body("data.first_name", is("Janet"))
-                .body("data.last_name", is("Weaver"));
+                .extract().as(UserResponseModel.class);
+
+        assertEquals("Janet", response.getName());
+        assertEquals("Weaver", response.getJob());
     }
 
     @Test
     void postCreateTest() {
-        String userData = """
-                {
-                    "name": "morpheus",
-                    "job": "leader"
-                }""";
+        UserDataModel userData = new UserDataModel();
+        userData.setName("morpheus");
+        userData.setJob("leader");
 
-        given()
+        UserResponseModel response = given()
                 .body(userData)
                 .contentType(JSON)
                 .log().uri()
@@ -45,41 +47,41 @@ public class SimpleApiTests extends TestBase {
                 .log().status()
                 .log().body()
                 .statusCode(201)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"));
+                .extract().as(UserResponseModel.class);
+
+        assertEquals("morpheus", response.getName());
+        assertEquals("leader", response.getJob());
     }
 
     @Test
-    void updateTest() {
-        String userData = """
-                {
-                    "name": "morpheus",
-                    "job": "zion resident"
-                }""";
+    void putTest() {
+        UserDataModel userData = new UserDataModel();
+        userData.setName("morpheus");
+        userData.setJob("zion resident");
 
-        given()
+        UserResponseModel response = given()
                 .body(userData)
                 .contentType(JSON)
                 .log().uri()
                 .when()
-                .update("/api/users/2")
+                .put("/api/users/2")
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .body("name", is("morpheus"))
-                .body("job", is("zion resident"));
+                .extract().as(UserResponseModel.class);
+
+        assertEquals("morpheus", response.getName());
+        assertEquals("zion resident", response.getJob());
     }
 
     @Test
     void patchUpdateTest() {
-        String userData = """
-                {
-                    "name": "morpheus",
-                    "job": "zion resident"
-                }""";
+        UserDataModel userData = new UserDataModel();
+        userData.setName("morpheus");
+        userData.setJob("zion resident");
 
-        given()
+        UserResponseModel response = given()
                 .body(userData)
                 .contentType(JSON)
                 .log().uri()
@@ -89,17 +91,20 @@ public class SimpleApiTests extends TestBase {
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .body("name", is("morpheus"))
-                .body("job", is("zion resident"));
+                .extract().as(UserResponseModel.class);
+
+        assertEquals("morpheus", response.getName());
+        assertEquals("zion resident", response.getJob());
     }
 
     @Test
     void deleteDeleteTest() {
-        given()
+        UserResponseModel response = given()
                 .log().uri()
                 .delete("/api/users/2")
                 .then()
                 .log().status()
-                .statusCode(204);
+                .statusCode(204)
+                .extract().as(UserResponseModel.class);
     }
 }
