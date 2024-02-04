@@ -89,7 +89,7 @@ public class SimpleApiTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Удаление пользователя")
+    @DisplayName("Проверка удаления пользователя")
     void deleteDeleteTest() {
         Specifications.installSpecification(baseURI, 204);
         step("DELETE-запрос удалить пользователся, проверяем Статус-код = 204", () -> given()
