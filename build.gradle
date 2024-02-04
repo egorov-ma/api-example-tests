@@ -1,5 +1,29 @@
 plugins {
     id 'java-library'
+    id "io.freefair.lombok" version "6.0.0-m2"
+    id('io.qameta.allure') version '2.11.2'
+}
+
+group "ru.egorovma"
+version "1.0-SNAPSHOT"
+
+def slf4jVersion = "2.0.9",
+    junitVersion = "5.10.1",
+    allureVersion = "2.25.0",
+    restAssuredVersion = "5.4.0"
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
 }
 
 repositories {
@@ -8,10 +32,13 @@ repositories {
 
 dependencies {
     testImplementation(
-            'io.rest-assured:rest-assured:5.3.1',
-            "org.junit.jupiter:junit-jupiter:5.10.0",
-            'org.slf4j:slf4j-simple:2.0.7'
-    )
+            "org.junit.jupiter:junit-jupiter:$junitVersion",
+            "io.rest-assured:rest-assured:$restAssuredVersion",
+            "io.rest-assured:json-schema-validator:$restAssuredVersion",
+            "io.qameta.allure:allure-rest-assured:$allureVersion",
+            "com.fasterxml.jackson.core:jackson-core:2.16.1")
+    testRuntimeOnly(
+            "org.slf4j:slf4j-simple:$slf4jVersion")
 }
 
 tasks.withType(Test) {
