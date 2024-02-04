@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 public class SingleUserResponseDataModel {
-	int id;
-	String email;
-	@JsonProperty("first_name")
-	String firstName;
-	@JsonProperty("last_name")
-	String lastName;
-	String avatar;
+    int id;
+    String email;
+    @JsonProperty("first_name")
+    String firstName;
+    @JsonProperty("last_name")
+    String lastName;
+    String avatar;
 }

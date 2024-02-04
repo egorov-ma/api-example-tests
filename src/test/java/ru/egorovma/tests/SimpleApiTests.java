@@ -1,136 +1,100 @@
 package ru.egorovma.tests;
 
+import io.qameta.allure.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.egorovma.models.createUsers.CreateUsersRequestModel;
-import ru.egorovma.models.createUsers.CreateUsersResponseModel;
+import ru.egorovma.data.UsersData;
+import ru.egorovma.models.user.UserRequestModel;
+import ru.egorovma.models.user.CreateUsersResponseModel;
 import ru.egorovma.models.singleUsers.SingleUserResponseModel;
-import ru.egorovma.models.updateUsers.UpdateUserResponseModel;
-import ru.egorovma.models.updateUsers.UpdateUsersRequestModel;
+import ru.egorovma.models.user.UpdateUserResponseModel;
+import ru.egorovma.specs.Specifications;
 
 import static io.qameta.allure.Allure.step;
+import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static ru.egorovma.helpers.CustomApiListener.withCustomTemplates;
 
 public class SimpleApiTests extends TestBase {
 
+    UsersData user = new UsersData();
+    private final static String USER = "/api/users/2",
+            POST_CREATE = "/api/users";
+
     @Test
+    @Description("Проверка email и url пользователя")
     void getSingleUserTest() {
-        SingleUserResponseModel response = step("GET-запрос получить пользователся", () ->
-                given()
-                        .filter(withCustomTemplates())
-                        .log().uri()
-                        .log().headers()
-                        .log().body()
-                        .get("/api/users/2")
-                        .then()
-                        .statusCode(200)
-                        .extract().as(SingleUserResponseModel.class));
-        step("Проверка ответа", () -> {
-            assertEquals("janet.weaver@reqres.in", response.getData().getEmail());
-            assertEquals("https://reqres.in/#support-heading", response.getSupport().getUrl());
-        });
-    }
-
-    @Test
-    void postCreateTest() {
-        CreateUsersRequestModel userData = new CreateUsersRequestModel();
-        userData.setName("morpheus");
-        userData.setJob("leader");
-
-        CreateUsersResponseModel response = step("POST-запрос создание пользователся", () ->
-                given()
-                        .filter(withCustomTemplates())
-                        .log().uri()
-                        .log().headers()
-                        .log().body()
-                        .body(userData)
-                        .contentType(JSON)
-                        .when()
-                        .post("/api/users")
-                        .then()
-                        .log().status()
-                        .log().headers()
-                        .log().body()
-                        .statusCode(201)
-                        .extract().as(CreateUsersResponseModel.class));
-        step("Проверка ответа", () -> {
-            assertEquals("morpheus", response.getName());
-            assertEquals("leader", response.getJob());
-        });
-    }
-
-    @Test
-    void putTest() {
-        UpdateUsersRequestModel userData = new UpdateUsersRequestModel();
-        userData.setName("morpheus");
-        userData.setJob("zion resident");
-
-        UpdateUserResponseModel response = step("PUT-запрос обновление пользователся", () ->
-                given()
-                .filter(withCustomTemplates())
-                .log().uri()
-                .log().headers()
-                .log().body()
-                .body(userData)
-                .contentType(JSON)
-                .log().uri()
+        Specifications.installSpecification(baseURI, 200);
+        SingleUserResponseModel response = step("GET-запрос получить пользователся", () -> given()
                 .when()
-                .put("/api/users/2")
+                .get(USER)
                 .then()
-                .log().status()
-                .log().headers()
-                .log().body()
-                .statusCode(200)
-                .extract().as(UpdateUserResponseModel.class));
-        step("Проверка ответа", () -> {
-            assertEquals("morpheus", response.getName());
-            assertEquals("zion resident", response.getJob());
-        });
+                .extract().as(SingleUserResponseModel.class));
+        step("Проверка ответа, соотвктствия email", () ->
+                assertEquals(user.userEmail, response.getData().getEmail()));
+        step("Проверка ответа, соотвктствия url", () ->
+                assertEquals(user.userUrl, response.getSupport().getUrl()));
     }
 
     @Test
-    void patchUpdateTest() {
-        UpdateUsersRequestModel userData = new UpdateUsersRequestModel();
-        userData.setName("morpheus");
-        userData.setJob("zion resident");
+    @Description("Проверка создания пользователя")
+    void postCreateTest() {
+        UserRequestModel userData = new UserRequestModel(user.userName, user.userJob);
+        Specifications.installSpecification(baseURI, 201);
+        CreateUsersResponseModel response = step("POST-запрос создание пользователся", () -> given()
+                .body(userData)
+                .when()
+                .post(POST_CREATE)
+                .then()
+                .extract().as(CreateUsersResponseModel.class));
+        step("Проверка ответа, соответствия Имени", () ->
+                assertEquals(user.userName, response.getName()));
+        step("Проверка ответа, соответствия Работы", () ->
+                assertEquals(user.userJob, response.getJob()));
+    }
 
+    @Test
+    @Description("Проверка обновления клиента метолом PUT")
+    void putTest() {
+        UserRequestModel userData = new UserRequestModel(user.userName, user.newUserJob);
+        Specifications.installSpecification(baseURI, 200);
+        UpdateUserResponseModel response = step("PUT-запрос обновление пользователся", () -> given()
+                .body(userData)
+                .when()
+                .put(USER)
+                .then()
+                .extract().as(UpdateUserResponseModel.class));
+        step("Проверка ответа, соответствия Имени", () ->
+                assertEquals(user.userName, response.getName()));
+        step("Проверка ответа, соответствия Работы", () ->
+                assertEquals(user.newUserJob, response.getJob()));
+    }
+
+    @Test
+    @Description("Проверка обновления клиента метолом PATCH")
+    void patchUpdateTest() {
+        UserRequestModel userData = new UserRequestModel(user.userName, user.newUserJob);
+        Specifications.installSpecification(baseURI, 200);
         UpdateUserResponseModel response = step("PATCH-запрос обновление пользователся", () ->
                 given()
-                .filter(withCustomTemplates())
-                .log().uri()
-                .log().headers()
-                .log().body()
-                .body(userData)
-                .contentType(JSON)
-                .log().uri()
-                .when()
-                .patch("/api/users/2")
-                .then()
-                .log().status()
-                .log().headers()
-                .log().body()
-                .statusCode(200)
-                .extract().as(UpdateUserResponseModel.class));
-        step("Проверка ответа", () -> {
-            assertEquals("morpheus", response.getName());
-            assertEquals("zion resident", response.getJob());
-        });
+                        .body(userData)
+                        .when()
+                        .patch(USER)
+                        .then()
+                        .extract().as(UpdateUserResponseModel.class));
+        step("Проверка ответа, соответствия Имени", () ->
+                assertEquals(user.userName, response.getName()));
+        step("Проверка ответа, соответствия Работы", () ->
+                assertEquals(user.newUserJob, response.getJob()));
     }
 
     @Test
+    @DisplayName("Удаление пользователя")
     void deleteDeleteTest() {
-        step("DELETE-запрос удалмть пользователся", () -> given()
-                .filter(withCustomTemplates())
-                .log().uri()
-                .log().headers()
-                .log().body()
-                .delete("/api/users/2")
-                .then()
-                .log().status()
-                .log().headers()
-                .log().body()
-                .statusCode(204));
+        Specifications.installSpecification(baseURI, 204);
+        step("DELETE-запрос удалить пользователся, проверяем Статус-код = 204", () -> given()
+                .when()
+                .delete(USER)
+                .then());
     }
 }
