@@ -1,6 +1,5 @@
 package ru.egorovma.specs;
 
-import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -22,17 +21,11 @@ public class Specifications {
                 .build();
     }
 
-    public static ResponseSpecification responseSpec(int code) {
+    public static ResponseSpecification responseSpec() {
         return new ResponseSpecBuilder()
                 .log(LogDetail.STATUS)
                 .log(LogDetail.HEADERS)
                 .log(LogDetail.BODY)
-                .expectStatusCode(code)
                 .build();
-    }
-
-    public static void installSpecification(int code) {
-        RestAssured.requestSpecification = Specifications.requestSpec();
-        RestAssured.responseSpecification = Specifications.responseSpec(code);
     }
 }
