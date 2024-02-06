@@ -12,12 +12,11 @@ import static ru.egorovma.helpers.CustomApiListener.withCustomTemplates;
 
 public class Specifications {
 
-    public static RequestSpecification requestSpec(String url) {
+    public static RequestSpecification requestSpec() {
         return new RequestSpecBuilder()
                 .log(LogDetail.URI)
                 .log(LogDetail.HEADERS)
                 .log(LogDetail.BODY)
-                .setBaseUri(url)
                 .setContentType(ContentType.JSON)
                 .addFilter(withCustomTemplates())
                 .build();
@@ -32,8 +31,8 @@ public class Specifications {
                 .build();
     }
 
-    public static void installSpecification(String url, int code) {
-        RestAssured.requestSpecification = Specifications.requestSpec(url);
+    public static void installSpecification(int code) {
+        RestAssured.requestSpecification = Specifications.requestSpec();
         RestAssured.responseSpecification = Specifications.responseSpec(code);
     }
 }

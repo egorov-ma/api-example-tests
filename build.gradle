@@ -30,19 +30,29 @@ repositories {
     mavenCentral()
 }
 
+compileJava {
+    options.encoding = 'UTF-8'
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+
 dependencies {
     testImplementation(
             "org.junit.jupiter:junit-jupiter:$junitVersion",
             "io.rest-assured:rest-assured:$restAssuredVersion",
             "io.rest-assured:json-schema-validator:$restAssuredVersion",
             "io.qameta.allure:allure-rest-assured:$allureVersion",
-            "com.fasterxml.jackson.core:jackson-core:2.16.1")
+            "com.fasterxml.jackson.core:jackson-core:2.16.1",
+            "org.assertj:assertj-core:3.25.3")
     testRuntimeOnly(
             "org.slf4j:slf4j-simple:$slf4jVersion")
 }
 
 tasks.withType(Test) {
     useJUnitPlatform()
+    systemProperties(System.getProperties())
 
     testLogging {
         lifecycle {

@@ -1,4 +1,4 @@
-package ru.egorovma.models.singleUsers;
+package ru.egorovma.models.singleusers;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package ru.egorovma.models.singleUsers;
+package ru.egorovma.models.singleusers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
